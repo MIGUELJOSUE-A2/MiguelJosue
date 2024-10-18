@@ -90,3 +90,98 @@ b. View the dataset. Write the R scripts and its result.
 file <- read.table("import_march.csv", header = TRUE, sep = ",")
 print(file)
 ```
+6. Create an R Program that allows the User to randomly select numbers from 1 to 50. Then display the chosen number. If the number is beyond the range of the selected choice, it will have to display a string "The number selected is beyond the range of 1 to 50". If number 20 is inputted by the User, it will have to display "TRUE", otherwise display the input number.
+```{r}
+#Full Search
+exhaustive_search <- function(input_number) {
+  if (is.na(input_number)||input_number < 1 || input_number > 50) {
+    return("The number selected is beyond the range of 1 to 50")
+  } else if (input_number == 20) {
+    return("TRUE")
+  } else {
+    return(paste("The selected number is:", input_number))
+  }
+}
+
+input_number <- as.integer(readline(prompt = "Enter a number between 1 and 50: "))
+result <- exhaustive_search(input_number)
+print(result)
+```
+7. At ISATU University's traditional cafeteria, snacks can only be purchased with bills. A long-standing rule at the concession stand is that snacks must be purchased with as few coins as possible. There are three types of bills: 50 pesos, 100 pesos, 200 pesos, 500 pesos, 1000 pesos.
+a. Write a function that prints the minimum number of bills that must be paid, given the price of the snack.
+
+```{r}
+#Change
+min_bills <- function(price) {
+  available_bills <- c(1000, 500, 200, 100, 50)
+  total_bills <- 0
+  
+  for (bill in available_bills) {
+    if (is.na(price) || is.na(bill)||price >= bill) {
+      count <- floor(price / bill)
+      price <- price - count * bill
+      total_bills <- total_bills + count
+    }
+  }
+  
+  return(total_bills)
+}
+
+price <- as.numeric(readline(prompt = "Enter the price of the snack: "))
+print(paste("Minimum number of bills needed to purchase a snack:", min_bills(price)))
+
+```
+8. The following is each student's math score for one semester. Based on this, answer the following questions.
+A. Create a dataframe from the above table. Write the R codes and its output.
+```{r}
+grades <- data.frame(
+  Name = c("Annie", "Thea", "Steve", "Hanna"),
+  Grade1 = c(85, 65, 75, 95),
+  Grade2 = c(65, 75, 55, 75),
+  Grade3 = c(85, 90, 80, 100),
+  Grade4 = c(100, 90, 85, 90)
+)
+
+grades
+```
+B. Without using the rowMean function, output the average score of students whose average math score over 90 points during the semester. write R code and its output.
+```{r}
+for (i in 1:nrow(grades)) {
+  total_score <- sum(grades[i, 2:5])  
+  avg_score <- total_score / 4  
+  if (avg_score > 90) {
+    print(paste(grades$Name[i], "'s average grade this semester is", avg_score))
+  }
+}
+#NO average score OVER 90 (highest is flat 90)
+```
+C. Without using the mean function, output as follows for the tests in which the average score was less than 80 out of 4 tests.
+```{r}
+for (j in 2:5) {
+  total_score <- sum(grades[, j])  
+  avg_score <- total_score / nrow(grades)  
+  if (avg_score < 80) {
+    test_num <- j - 1  
+    print(paste("The Grade",test_num, "test was difficult."))
+  }
+}
+```
+D.Without using the max function, output as follows for students whose highest score for a semester exceeds 90 points.
+```{r}
+for (i in 1:nrow(grades)) {
+  highest_score <- grades[i, 2]  
+  for (j in 3:5) {  
+    if (grades[i, j] > highest_score) {
+      highest_score <- grades[i, j]
+    }
+  }
+  if (highest_score > 90) {
+    print(paste(grades$Name[i], "'s highest grade this semester is", highest_score))
+  }
+}
+```
+
+
+
+
+
