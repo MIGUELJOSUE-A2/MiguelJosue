@@ -59,9 +59,9 @@ head(shoe_data)
 ```
 ```{r}
 #4B. Create a subset for gender(female and male). How many observations are there inMale? How about in Female? Write the R scripts and its output.
-male <- subset(shoe_data, gender == "M", select = Gender)
+male <- subset(shoe_data, Gender == "M")
 male
-female <- subset(shoe_data, gender == "F", select = Gender)
+female <- subset(shoe_data, Gender == "F")
 female
 ```
 ```{r}
@@ -140,6 +140,7 @@ legend("topright", legend = names(species_colors),
 
 ```
 6F. Interpret the result.
+
 Setosa: This flower type stands out clearly. Its points are clustered in a single area with shorter yet , wider sepals than the others. This means that Setosa has more compact sepals, making it easy to tell apart from the others
 
 Versicolor: Versicolor’s points are more spread out and overlap a bit with Virginica’s, meaning it shares similar sepal sizes with Virginica. Its sepals are generally longer than Setosa’s but still vary in width.
@@ -150,11 +151,10 @@ Virginica: Virginica has the longest sepals overall, and it also has some overla
 tra whitespaces among black variants (Black Dot, Black Plus, Black Show, Black Spot). Also on the white variants (White Dot, White Plus, White Show, White
 Spot).
 ```{r}
+library(readxl)
 alexa <- read_excel("alexa_file.xlsx")
 alexa
 #7A. Rename the white and black variants by using gsub() function.
-alexa$variation <- gsub("\\s+", " ", alexa$variation)
-alexa$variation <- trimws(alexa$variation)
 alexa$variation <- gsub("Black  Dot", "BlackDot", alexa$variation)
 alexa$variation <- gsub("Black  Plus", "BlackPlus", alexa$variation)
 alexa$variation <- gsub("Black  Show", "BlackShow", alexa$variation)
@@ -163,7 +163,70 @@ alexa$variation <- gsub("White  Spot", "WhiteSpot", alexa$variation)
 alexa$variation <- gsub("White  Show", "WhiteShow", alexa$variation)
 alexa$variation <- gsub("White  Plus", "WhitePlus", alexa$variation)
 alexa$variation <- gsub("White  Dot", "WhiteDot", alexa$variation)
+alexa[1520:2000, ]
 ```
+Write the R scripts and show an example of the output by getting a snippet. To embed
+an image into Rmd, use the function below:
+```{r}
+library(knitr)
+include_graphics("sampleimg.png")
+
+```
+
+7B. Get the total number of each variations and save it into another object. Save the
+object as variations.RData. Write the R scripts. What is its result?
+Hint: Use the dplyr package. Make sure to install it before loading the package.
+```{r}
+library(dplyr)
+alexa_var <- alexa %>%
+  count(alexa$variation)
+save(alexa_var, file = "variations.RData")
+alexa_var
+```
+7C.From the variations.RData, create a barplot(). Complete the details of the chart
+which include the title, color, labels of each bar.
+```{r}
+load("variations.RData")
+var_bar <- barplot(
+  alexa_var$n,                              
+  names.arg = alexa_var$`alexa$variation`,        
+  col = cm.colors(length(alexa_var$n)),  
+  main = "Total Number of Variations", 
+  las = 2,
+)
+```
+7D.Create a barplot() for the black and white variations. Plot it in 1 frame, side by
+side. Complete the details of the chart.
+```{r}
+load("variations.RData")
+par(mfrow = c(1, 2))
+
+black <- alexa_var %>% 
+  filter(`alexa$variation` %in% c("Black", "BlackDot", "BlackPlus", "BlackShow", "BlackSpot"))
+
+barplot(
+  height = black$n, 
+  names.arg = black$`alexa$variation`, 
+  col = topo.colors(length(black$n)),               
+  main = "Black Variants",
+  las = 2
+)
+
+white <- alexa_var %>% 
+  filter(`alexa$variation` %in% c("White", "WhiteDot", "WhitePlus", "WhiteShow", "WhiteSpot"))
+
+barplot(
+  height = white$n,  
+  names.arg = white$`alexa$variation`, 
+  col = terrain.colors(length(white$n)),              
+  main = "White Variants",,
+  las = 2
+)
+
+```
+
+
+
 
 
 
