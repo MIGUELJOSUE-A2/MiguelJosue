@@ -1,0 +1,84 @@
+---
+title: "Worksheet5 IMDB start"
+author: "Miguel F. Josue Jr."
+date: "2024-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(httr)
+library(polite)
+library(rvest)
+library(dplyr)
+polite::use_manners(save_as = 'polite_scrape.R')
+
+url <- "https://www.imdb.com/chart/toptv/"
+  
+session <- bow(url,
+               user_agent = "Educational")  
+
+title_list <- read_html(url) %>%
+  html_nodes('h3.ipc-title__text') %>%
+  html_text()
+
+
+
+title_list_sub <- as.data.frame(title_list[2:26], stringsAsFactors = FALSE)
+colnames(title_list_sub) <- "ranks"
+
+split_df <- strsplit(as.character(title_list_sub$ranks), "\\.", fixed = FALSE)
+split_df <- data.frame(do.call(rbind, split_df), stringsAsFactors = FALSE)
+
+colnames(split_df) <- c("rank", "title")
+split_df <- split_df %>% select(rank, title)
+
+split_df$title <- trimws(split_df$title)
+
+
+rank_title <- split_df
+rank_title
+```
+
+```{r}
+rating <- scrape(session) %>%
+  html_nodes('span.ipc-rating-star--rating') %>% 
+  html_text
+  rating <- as.data.frame(rating)
+  rating
+```
+
+```{r}
+voters <- scrape(session) %>%
+  html_nodes('span.ipc-rating-star--voteCount') %>% 
+  html_text
+  num_people <- as.data.frame(voters)
+  voters
+```
+
+```{r}
+episodes <- scrape(session) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+  episodes <- as.data.frame(episodes)
+  episodes
+```
+
+```{r}
+year <- scrape(session) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_text
+  year <- as.data.frame(year)
+  year
+```
+```{r}
+tv_shows <-cbind(rank_title,rating,num_people,episodes,year)
+tv_shows
+```
+
+
+
+
+
